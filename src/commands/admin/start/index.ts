@@ -11,7 +11,7 @@ export const adminStart = async (ctx: MyContext) => {
     }
 
     const keyboard = new InlineKeyboard().text(
-        'Продукты', 'adminProducts'
+        'Продукты', 'products'
     ).text('пользователи', 'users')
     ctx.reply('Добро пожаловать в админ панель!', {
         reply_markup: keyboard

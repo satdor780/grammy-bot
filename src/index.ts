@@ -1,11 +1,14 @@
 import 'dotenv/config';
-import { Bot } from 'grammy';
+import {Bot, session} from 'grammy';
 import { GrammyError, HttpError } from 'grammy';
 import moongose from 'mongoose';
 import {hydrate} from '@grammyjs/hydrate'
-import {MyContext} from './types/index.js'
+import {MyContext, MySession} from './types/index.js'
 import {start} from "./commands/start/index.js";
 import {usersCommand} from "./commands/admin/index.js";
+import {products} from "./commands/products/index.js";
+import {chooseType, createProduct, enterData} from "./commands/admin/createProduct/index.js";
+
 
 const token = process.env.BOT_TOKEN
 const mongoDbURL = process.env.MONGODB_URI;
@@ -17,17 +20,25 @@ if(!token) {
 const bot = new Bot<MyContext>(token);
 bot.use(hydrate());
 
+bot.use(
+    session({
+        initial: (): MySession => ({}), // ← ВАЖНО
+    })
+)
+
 // Ответ на команду /start
 bot.command('start', start);
-
-// Ответ на любое сообщение
-bot.on('message:text', (ctx) => {
-    ctx.reply(ctx.message.text);
-});
 
 bot.callbackQuery('users', usersCommand);
 
 bot.callbackQuery('toMenu', start);
+
+bot.callbackQuery('products', products)
+
+bot.callbackQuery('createProduct', createProduct)
+
+bot.callbackQuery(/^create_product:/, chooseType)
+bot.on('message:text', enterData)
 
 // Обработка ошибок согласно документации
 bot.catch((err) => {
