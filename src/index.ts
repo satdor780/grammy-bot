@@ -8,8 +8,7 @@ import {start} from "./commands/start/index.js";
 import {usersCommand} from "./commands/admin/index.js";
 import {products} from "./commands/products/index.js";
 import {chooseType, createProduct, enterData} from "./commands/admin/createProduct/index.js";
-import {Menu} from "@grammyjs/menu";
-
+import { support } from './commands/support/support.js';
 
 const token = process.env.BOT_TOKEN
 const mongoDbURL = process.env.MONGODB_URI;
@@ -27,15 +26,6 @@ bot.use(
     })
 )
 
-export const menu = new Menu("my-menu-identifier")
-    .text("A", (ctx) => ctx.reply("You pressed A!")).row()
-    .text("B", (ctx) => ctx.reply("You pressed B!")).row()
-    .submenu("Credits", "credits-menu").row()
-    .back("Go Back");
-
-
-bot.use(menu);
-
 // Ответ на команду /start
 bot.command('start', start);
 
@@ -46,6 +36,8 @@ bot.callbackQuery('toMenu', start);
 bot.callbackQuery('products', products)
 
 bot.callbackQuery('createProduct', createProduct)
+
+bot.callbackQuery('support', support)
 
 bot.callbackQuery(/^create_product:/, chooseType)
 bot.on('message:text', enterData)
