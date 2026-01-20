@@ -8,6 +8,7 @@ import {start} from "./commands/start/index.js";
 import {usersCommand} from "./commands/admin/index.js";
 import {products} from "./commands/products/index.js";
 import {chooseType, createProduct, enterData} from "./commands/admin/createProduct/index.js";
+import {Menu} from "@grammyjs/menu";
 
 
 const token = process.env.BOT_TOKEN
@@ -25,6 +26,15 @@ bot.use(
         initial: (): MySession => ({}), // ← ВАЖНО
     })
 )
+
+export const menu = new Menu("my-menu-identifier")
+    .text("A", (ctx) => ctx.reply("You pressed A!")).row()
+    .text("B", (ctx) => ctx.reply("You pressed B!")).row()
+    .submenu("Credits", "credits-menu").row()
+    .back("Go Back");
+
+
+bot.use(menu);
 
 // Ответ на команду /start
 bot.command('start', start);

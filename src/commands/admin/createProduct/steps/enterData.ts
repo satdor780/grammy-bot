@@ -1,6 +1,7 @@
 import {MyContext} from "../../../../types/index.js";
 import {isAdmin} from "../../../../utils/isAdmin.js";
 import {Product} from "../../../../models/index.js";
+import {InlineKeyboard} from "grammy";
 
 export const enterData = async (ctx: MyContext) => {
     if (!isAdmin(ctx)) return
@@ -45,9 +46,53 @@ export const enterData = async (ctx: MyContext) => {
         ctx.session.step = undefined
         ctx.session.productType = undefined
 
-        await ctx.reply('✅ Продукт успешно создан')
+        const keyboard = new InlineKeyboard()
+            .text('⬅️ Назад', 'createProduct')
+            .text('🏠 В меню', 'toMenu')
+
+        // Try to edit previous message if we have the message ID
+        if (ctx.session.lastMessageId && ctx.chat?.id) {
+            try {
+                await ctx.api.editMessageText(
+                    ctx.chat.id,
+                    ctx.session.lastMessageId,
+                    '✅ Продукт успешно создан',
+                    {reply_markup: keyboard}
+                );
+                ctx.session.lastMessageId = undefined;
+                return;
+            } catch (e) {
+                // If editing fails, fall back to sending a new message
+            }
+        }
+
+        await ctx.reply('✅ Продукт успешно создан', {
+            reply_markup: keyboard
+        })
 
     } catch (e) {
-        await ctx.reply('❌ Ошибка. Проверь формат данных.')
+        const keyboard = new InlineKeyboard()
+            .text('⬅️ Назад', 'createProduct')
+            .text('🏠 В меню', 'toMenu')
+        
+        // Try to edit previous message if we have the message ID
+        if (ctx.session.lastMessageId && ctx.chat?.id) {
+            try {
+                await ctx.api.editMessageText(
+                    ctx.chat.id,
+                    ctx.session.lastMessageId,
+                    '❌ Ошибка. Проверь формат данных.',
+                    {reply_markup: keyboard}
+                );
+                ctx.session.lastMessageId = undefined;
+                return;
+            } catch (error) {
+                // If editing fails, fall back to sending a new message
+            }
+        }
+        
+        await ctx.reply('❌ Ошибка. Проверь формат данных.', {
+            reply_markup: keyboard
+        })
     }
 }

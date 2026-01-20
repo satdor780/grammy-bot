@@ -5,7 +5,7 @@ import {isAdmin} from "../../../utils/isAdmin.js";
 
 
 export const createProduct = async (ctx: CallbackQueryContext<MyContext>) => {
-    ctx.answerCallbackQuery();
+    await ctx.answerCallbackQuery();
     if(!ctx.from) {
         await ctx.callbackQuery.message?.editText('user is undefined')
         return
@@ -16,6 +16,9 @@ export const createProduct = async (ctx: CallbackQueryContext<MyContext>) => {
             .text('📩 Почта', 'create_product:mail')
             .row()
             .text('🧾 Фулка', 'create_product:full')
+            .row()
+            .text('⬅️ Назад', 'products')
+            .text('🏠 В меню', 'toMenu')
         await ctx.callbackQuery.message?.editText('выберете тип продукта который хотите создать и следуйте дальнейшем инструкциям',
             {
                 reply_markup: keyboard

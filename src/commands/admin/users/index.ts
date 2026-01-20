@@ -6,16 +6,16 @@ import {User} from "../../../models/index.js";
 
 
 export const usersCommand = async (ctx: CallbackQueryContext<MyContext>) => {
-    ctx.answerCallbackQuery();
+    await ctx.answerCallbackQuery();
 
     if (!isAdmin(ctx)) {
         await ctx.callbackQuery.message?.editText('⛔ Доступ только для администраторов');
         return;
     }
 
-    const keyboard = new InlineKeyboard().text(
-        'в меню', 'toMenu'
-    )
+    const keyboard = new InlineKeyboard()
+        .text('⬅️ Назад', 'toMenu')
+        .text('🏠 В меню', 'toMenu')
 
     const users = await User.find()
         .sort({ createdAt: -1 })
