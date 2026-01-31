@@ -9,9 +9,28 @@ import {usersCommand} from "./commands/admin/index.js";
 import {products} from "./commands/products/index.js";
 import {chooseType, createProduct, enterData} from "./commands/admin/createProduct/index.js";
 import { support } from './commands/support/support.js';
+import express from 'express'
+import cors from 'cors'
+import router from './api/index.js';
+
 
 const token = process.env.BOT_TOKEN
 const mongoDbURL = process.env.MONGODB_URI;
+
+const app = express()
+
+// middleware
+app.use(cors({ origin: '*' }))
+app.use(express.json())
+
+// API
+app.use('/api', router)
+
+// 🚀 запускаем HTTP
+app.listen(3000, () => {
+  console.log('API running on port 3000')
+})
+
 
 if(!token) {
     throw new Error('BOT_TOKEN is not defined')

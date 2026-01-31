@@ -6,8 +6,9 @@ import {adminStart} from "../admin/start/index.js";
 import {User} from "../../models/index.js";
 import {Menu} from "@grammyjs/menu";
 
+const MINIAPP_URI = process.env.MINIAPP_URI
+
 export const start = async (ctx: MyContext) => {
-    // Answer callback query if this is from a callback
     if (ctx.callbackQuery) {
         await ctx.answerCallbackQuery();
     }
@@ -27,11 +28,10 @@ export const start = async (ctx: MyContext) => {
         const keyboard = new InlineKeyboard()
             .webApp(
                 '🛍 Продукты',
-                'https://sardor-react-portfolio.netlify.app' // <-- твой mini-app
+                MINIAPP_URI ?? ''
             )
             .text('🆘 Тех поддержка', 'support');
-        
-        // If called from callback query, edit the message
+
         if (ctx.callbackQuery?.message) {
             if(user) {
                 return await ctx.callbackQuery.message.editText('вы уже зарегистрированы', {
@@ -50,7 +50,6 @@ export const start = async (ctx: MyContext) => {
             })
         }
         
-        // If called from command, send new message
         if(user) {
             return await ctx.reply('вы уже зарегистрированы', {
                 reply_markup: keyboard

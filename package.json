@@ -15,12 +15,16 @@
   "dependencies": {
     "@grammyjs/hydrate": "^1.4.1",
     "@grammyjs/menu": "^1.3.1",
+    "cors": "^2.8.6",
     "dotenv": "^16.4.7",
+    "express": "^5.2.1",
     "grammy": "^1.35.1",
     "mongoose": "^8.13.2",
     "nodemon": "^3.1.9"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "@types/mongoose": "^5.11.96",
     "@types/node": "^22.14.1",
     "tsx": "^4.19.3",
