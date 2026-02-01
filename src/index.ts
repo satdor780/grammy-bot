@@ -4,15 +4,11 @@ import { GrammyError, HttpError } from 'grammy';
 import moongose from 'mongoose';
 import {hydrate} from '@grammyjs/hydrate'
 import {MyContext, MySession} from './types/index.js'
-import {start} from "./commands/start/index.js";
-import {usersCommand} from "./commands/admin/index.js";
-import {products} from "./commands/products/index.js";
-import {chooseType, createProduct, enterData} from "./commands/admin/createProduct/index.js";
-import { support } from './commands/support/support.js';
+
 import express from 'express'
 import cors from 'cors'
 import router from './api/index.js';
-
+import { chooseType, createProduct, enterData, products, start, support, topup, usersCommand } from './commands/index.js';
 
 const token = process.env.BOT_TOKEN
 const mongoDbURL = process.env.MONGODB_URI;
@@ -57,6 +53,8 @@ bot.callbackQuery('products', products)
 bot.callbackQuery('createProduct', createProduct)
 
 bot.callbackQuery('support', support)
+bot.callbackQuery('topup', topup)
+
 
 bot.callbackQuery(/^create_product:/, chooseType)
 bot.on('message:text', enterData)
