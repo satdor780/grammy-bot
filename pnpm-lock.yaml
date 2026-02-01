@@ -14,9 +14,6 @@ importers:
       '@grammyjs/menu':
         specifier: ^1.3.1
         version: 1.3.1(grammy@1.39.2)
-      '@types/telegram-web-app':
-        specifier: ^9.1.1
-        version: 9.1.1
       cors:
         specifier: ^2.8.6
         version: 2.8.6
@@ -33,11 +30,8 @@ importers:
         specifier: ^8.13.2
         version: 8.21.0
       nodemon:
-        specifier: ^3.1.9
+        specifier: ^3.1.11
         version: 3.1.11
-      tweetnacl:
-        specifier: ^1.0.3
-        version: 1.0.3
     devDependencies:
       '@types/cors':
         specifier: ^2.8.19
@@ -270,9 +264,6 @@ packages:
 
   '@types/serve-static@2.2.0':
     resolution: {integrity: sha512-8mam4H1NHLtu7nmtalF7eyBH14QyOASmcxHhSfEoRyr0nP/YdoesEtU+uSRvMe96TW/HPTtkoKqQLl53N7UXMQ==}
-
-  '@types/telegram-web-app@9.1.1':
-    resolution: {integrity: sha512-laSJZRDnab91uvq2yNqJnTGr9wz94IsU+6PCiOiJHMqfYqkN4xEXw+wh7KcfbVr0vtEKZxKvYS9fC4zU3scv9g==}
 
   '@types/webidl-conversions@7.0.3':
     resolution: {integrity: sha512-CiJJvcRtIgzadHCYXw7dqEnMNRjhGZlYK05Mj9OyktqV8uVT8fD2BFOB7S1uwBE3Kj2Z+4UyPmFw/Ixgw/LAlA==}
@@ -743,9 +734,6 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  tweetnacl@1.0.3:
-    resolution: {integrity: sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==}
-
   type-is@2.0.1:
     resolution: {integrity: sha512-OZs6gsjF4vMp32qrCbiVSkrFmXtG/AZhY3t0iAMrMBiAZyV9oALtXO8hsrHbMXF9x6L3grlFuwW2oAz7cav+Gw==}
     engines: {node: '>= 0.6'}
@@ -938,8 +926,6 @@ snapshots:
     dependencies:
       '@types/http-errors': 2.0.5
       '@types/node': 22.19.6
-
-  '@types/telegram-web-app@9.1.1': {}
 
   '@types/webidl-conversions@7.0.3': {}
 
@@ -1459,8 +1445,6 @@ snapshots:
       get-tsconfig: 4.13.0
     optionalDependencies:
       fsevents: 2.3.3
-
-  tweetnacl@1.0.3: {}
 
   type-is@2.0.1:
     dependencies:
