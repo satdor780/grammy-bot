@@ -3,8 +3,9 @@ import {MyContext} from "../../types/index.js";
 import {InlineKeyboard} from "grammy";
 import {isAdmin} from "../../utils/isAdmin.js";
 import {adminStart} from "../admin/start/index.js";
-import {User} from "../../models/index.js";
+import {Product, User} from "../../models/index.js";
 import {Menu} from "@grammyjs/menu";
+import { products } from "../products/index.js";
 
 const MINIAPP_URI = process.env.MINIAPP_URI
 
@@ -31,6 +32,8 @@ export const start = async (ctx: MyContext) => {
                 MINIAPP_URI ?? ''
             )
             .text('🆘 Тех поддержка', 'support');
+
+        console.log('products', Product.find())
 
         if (ctx.callbackQuery?.message) {
             if(user) {
