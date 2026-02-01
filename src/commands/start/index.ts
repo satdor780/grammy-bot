@@ -33,7 +33,7 @@ export const start = async (ctx: MyContext) => {
             )
             .text('🆘 Тех поддержка', 'support');
 
-        console.log('products', Product.find())
+        // console.log('products', Product.find())
 
         if (ctx.callbackQuery?.message) {
             if(user) {

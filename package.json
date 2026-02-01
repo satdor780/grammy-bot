@@ -21,7 +21,8 @@
     "express": "^5.2.1",
     "grammy": "^1.35.1",
     "mongoose": "^8.13.2",
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
