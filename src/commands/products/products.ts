@@ -18,17 +18,16 @@ export const products = async (ctx: CallbackQueryContext<MyContext>) => {
             .text('Добавить продукт', 'createProduct')
             .row()
             .webApp(
-                '🛍 Просмотр Продуктов',
+                '🛍 Добавить продукт (витрина)',
                 MINIAPP_URI ?? ''
             )
             .row()
             .webApp(
-                '🛍 Добавить тип продукта',
+                '🛍 Просмотр витрины',
                 MINIAPP_URI ?? ''
             )
             .row()
             .text('⬅️ Назад', 'toMenu')
-            .text('🏠 В меню', 'toMenu')
         const mailCount = await Product.countDocuments({ type: 'mail' })
         const fullCount = await Product.countDocuments({ type: 'full' })
 
