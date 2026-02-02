@@ -1,98 +1,135 @@
-import {MyContext} from "../../../../types/index.js";
-import {isAdmin} from "../../../../utils/isAdmin.js";
-import {Product} from "../../../../models/index.js";
-import {InlineKeyboard} from "grammy";
+import { InlineKeyboard } from "grammy";
+import { Product, ProductContent } from "../../../../models/index.js";
+import { isAdmin } from "../../../../utils/isAdmin.js";
+import { MyContext } from "../../../../types/index.js";
 
 export const enterData = async (ctx: MyContext) => {
-    if (!isAdmin(ctx)) return
-    if (ctx.session.step !== 'enter_data') return
-    if (!ctx.message?.text) return
+    if (!isAdmin(ctx)) return;
+    if (ctx.session.step !== 'enter_data') return;
+    if (!ctx.message?.text) return;
 
-    const lines = ctx.message.text.split('\n').map(l => l.trim())
+    const lines = ctx.message.text
+        .split('\n')
+        .map(l => l.trim())
+        .filter(Boolean);
+
+    const productType = ctx.session.productType as 'mail' | 'full' | undefined;
+
+    if (!productType || !['mail', 'full'].includes(productType)) {
+        await ctx.reply("Ошибка: тип продукта не выбран. Начните заново.");
+        ctx.session.step = undefined;
+        ctx.session.productType = undefined;
+        return;
+    }
+
+    const productId = ctx.session.currentProductId;
+
+    if (!productId) {
+        await ctx.reply("❌ Нет выбранного продукта. Выберите или создайте продукт сначала.");
+        ctx.session.step = undefined;
+        ctx.session.productType = undefined;
+        return;
+    }
 
     try {
-        if (ctx.session.productType === 'mail') {
-            if (lines.length !== 4) throw new Error('Неверный формат')
-
-            await Product.create({
-                type: 'mail',
-                price: 100,
-                data: {
-                    mail: lines[0],
-                    firstName: lines[1],
-                    lastName: lines[2],
-                    age: Number(lines[3]),
-                },
-            })
+        const productExists = await Product.exists({ _id: productId });
+        if (!productExists) {
+            throw new Error("Продукт с таким ID не найден. Выберите другой.");
         }
 
-        if (ctx.session.productType === 'full') {
-            if (lines.length !== 6) throw new Error('Неверный формат')
+        let createdContent;
 
-            await Product.create({
+        if (productType === 'mail') {
+            if (lines.length === 0) {
+                throw new Error("Нужно указать хотя бы email");
+            }
+
+            createdContent = await ProductContent.create({
+                product: productId,
+                type: 'mail',
+                data: {
+                    mail: lines[0],
+                    firstName: lines[1] || undefined,
+                    lastName: lines[2] || undefined,
+                    age: lines[3] ? Number(lines[3]) : undefined,
+                },
+            });
+        } 
+        else if (productType === 'full') {
+            if (lines.length < 2) {
+                throw new Error("Нужно указать хотя бы ФИО и адрес");
+            }
+
+            createdContent = await ProductContent.create({
+                product: productId,
                 type: 'full',
-                price: 500,
                 data: {
                     fullName: lines[0],
                     address: lines[1],
-                    city: lines[2],
-                    state: lines[3],
-                    zipCode: lines[4],
-                    creditScore: Number(lines[5]),
+                    city: lines[2] || undefined,
+                    state: lines[3] || undefined,
+                    zipCode: lines[4] || undefined,
+                    creditScore: lines[5] ? Number(lines[5]) : undefined,
                 },
-            })
+            });
         }
 
-        ctx.session.step = undefined
-        ctx.session.productType = undefined
+        const justCreatedType = productType;
+
+        ctx.session.step = undefined;
+        ctx.session.productType = undefined;
+        // currentProductId оставляем — удобно для добавления следующих позиций
 
         const keyboard = new InlineKeyboard()
-            .text('⬅️ Назад', 'createProduct')
-            .text('🏠 В меню', 'toMenu')
+            .text('Добавить ещё', `addContent:${productId}`)
+            .text('⬅️ К продукту', `editProduct:${productId}`)
+            .row()
+            .text('🏠 В меню', 'toMenu');
 
-        // Try to edit previous message if we have the message ID
+        const successText = `✅ Добавлен ${justCreatedType === 'mail' ? 'mail' : 'full'} аккаунт\n\nID: ${createdContent._id}`;
+
         if (ctx.session.lastMessageId && ctx.chat?.id) {
             try {
                 await ctx.api.editMessageText(
                     ctx.chat.id,
                     ctx.session.lastMessageId,
-                    '✅ Продукт успешно создан',
-                    {reply_markup: keyboard}
+                    successText,
+                    { reply_markup: keyboard }
                 );
                 ctx.session.lastMessageId = undefined;
                 return;
-            } catch (e) {
-                // If editing fails, fall back to sending a new message
-            }
+            } catch {}
         }
 
-        await ctx.reply('✅ Продукт успешно создан', {
-            reply_markup: keyboard
-        })
+        await ctx.reply(successText, { reply_markup: keyboard });
 
-    } catch (e) {
+    } catch (err: any) {
         const keyboard = new InlineKeyboard()
             .text('⬅️ Назад', 'createProduct')
-            .text('🏠 В меню', 'toMenu')
-        
-        // Try to edit previous message if we have the message ID
+            .text('🏠 В меню', 'toMenu');
+
+        let text = '❌ Ошибка при сохранении';
+
+        if (err.message.includes('хотя бы')) {
+            text = `❌ ${err.message}`;
+        } else if (err.name === 'ValidationError') {
+            text = '❌ Неверный формат данных';
+        } else {
+            text = `❌ ${err.message || 'Неизвестная ошибка'}`;
+        }
+
         if (ctx.session.lastMessageId && ctx.chat?.id) {
             try {
                 await ctx.api.editMessageText(
                     ctx.chat.id,
                     ctx.session.lastMessageId,
-                    '❌ Ошибка. Проверь формат данных.',
-                    {reply_markup: keyboard}
+                    text,
+                    { reply_markup: keyboard }
                 );
-                ctx.session.lastMessageId = undefined;
                 return;
-            } catch (error) {
-                // If editing fails, fall back to sending a new message
-            }
+            } catch {}
         }
-        
-        await ctx.reply('❌ Ошибка. Проверь формат данных.', {
-            reply_markup: keyboard
-        })
+
+        await ctx.reply(text, { reply_markup: keyboard });
     }
-}
+};

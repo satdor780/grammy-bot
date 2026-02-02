@@ -22,7 +22,7 @@ app.use(express.json())
 // API
 app.use('/api', router)
 
-// 🚀 запускаем HTTP
+// запускаем HTTP
 app.listen(3000, () => {
   console.log('API running on port 3000')
 })
@@ -37,11 +37,10 @@ bot.use(hydrate());
 
 bot.use(
     session({
-        initial: (): MySession => ({}), // ← ВАЖНО
+        initial: (): MySession => ({}),
     })
 )
 
-// Ответ на команду /start
 bot.command('start', start);
 
 bot.callbackQuery('users', usersCommand);

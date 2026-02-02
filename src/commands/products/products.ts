@@ -5,6 +5,8 @@ import {isAdmin} from "../../utils/isAdmin.js";
 import {adminStart} from "../admin/start/index.js";
 import {Product, User} from "../../models/index.js";
 
+const MINIAPP_URI = process.env.MINIAPP_URI
+
 export const products = async (ctx: CallbackQueryContext<MyContext>) => {
     await ctx.answerCallbackQuery();
     if(!ctx.from) {
@@ -13,7 +15,17 @@ export const products = async (ctx: CallbackQueryContext<MyContext>) => {
     }
     if(isAdmin(ctx)) {
         const keyboard = new InlineKeyboard()
-            .text('добавить продукт', 'createProduct')
+            .text('Добавить продукт', 'createProduct')
+            .row()
+            .webApp(
+                '🛍 Просмотр Продуктов',
+                MINIAPP_URI ?? ''
+            )
+            .row()
+            .webApp(
+                '🛍 Добавить тип продукта',
+                MINIAPP_URI ?? ''
+            )
             .row()
             .text('⬅️ Назад', 'toMenu')
             .text('🏠 В меню', 'toMenu')
