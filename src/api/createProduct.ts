@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { Product } from "../models/index.js";
 import { ProductType } from "../models/products/product.types.js";
+import { validateInitData } from "../utils/validateInitData.js";
+import { isAdminByUserId } from "../utils/isAdmin.js";
 
 const router = Router();
 
@@ -21,6 +23,20 @@ interface CreateProductBody {
 
 router.post("/products", async (req, res) => {
   try {
+    const initData = req.body.initData;
+    if (typeof initData !== "string") {
+      return res.status(400).json({ error: "initData is required" });
+    }
+    const validated = validateInitData(initData);
+    if (!validated) {
+      return res.status(401).json({ error: "Invalid initData signature" });
+    }
+    if (!isAdminByUserId(validated.user.id)) {
+      return res
+        .status(403)
+        .json({ error: "Forbidden: admin access required" });
+    }
+
     const body = req.body as CreateProductBody;
 
     const { type, title, image, shortDescription, basePrice, available } = body;
