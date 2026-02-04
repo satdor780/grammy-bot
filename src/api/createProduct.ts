@@ -65,6 +65,10 @@ router.post("/products", async (req, res) => {
         .json({ error: "basePrice must be a number >= 0.01" });
     }
 
+    const discounts: DiscountTier[] = Array.isArray(body.discounts)
+      ? body.discounts
+      : [];
+
     const product = await Product.create({
       type,
       slug: body.slug?.trim() || undefined,
@@ -76,7 +80,7 @@ router.post("/products", async (req, res) => {
       basePrice,
       currency: body.currency ?? "USDT",
       available,
-      discounts: body.discounts ?? [],
+      discounts,
       isActive: body.isActive ?? true,
     });
 
