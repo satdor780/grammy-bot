@@ -14,7 +14,7 @@ interface CreateProductBody {
   shortDescription: string;
   fullDescription?: string;
   basePrice: number;
-  currency?: "RUB" | "USD" | "EUR";
+  currency?: "USDT" | "BTC";
   available: number;
   discounts?: { minQuantity: number; discount: number }[];
   contentTemplate?: string;
@@ -73,7 +73,7 @@ router.post("/products", async (req, res) => {
       shortDescription: body.shortDescription.trim(),
       fullDescription: body.fullDescription?.trim(),
       basePrice,
-      currency: body.currency ?? "RUB",
+      currency: body.currency ?? "USDT",
       available,
       discounts: body.discounts ?? [],
       contentTemplate: body.contentTemplate || undefined,
