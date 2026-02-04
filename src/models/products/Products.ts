@@ -12,7 +12,8 @@ export interface IProduct extends Document {
   currency?: string; // 'RUB', 'USD' — по умолчанию RUB
   available: number; // -1 = бесконечно
   discounts: DiscountTier[];
-  contentTemplate?: Types.ObjectId; // ссылка на шаблон контента (если много одинаковых)
+  tags?: string[];
+  // contentTemplate?: Types.ObjectId; // ссылка на шаблон контента (если много одинаковых)
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,7 +48,12 @@ const productSchema = new Schema<IProduct>(
     currency: { type: String, default: "USDT", enum: ["USDT", "BTC"] },
     available: { type: Number, required: true, default: 0 }, // -1 = unlimited
     discounts: { type: [discountTierSchema], default: [] },
-    contentTemplate: { type: Schema.Types.ObjectId, ref: "ProductContent" },
+    tags: {
+      type: [String],
+      default: [],
+      index: true, // удобно для фильтрации
+    },
+    // contentTemplate: { type: Schema.Types.ObjectId, ref: "ProductContent" },
   },
   {
     timestamps: true,

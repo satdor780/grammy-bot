@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Product } from "../models/index.js";
-import { ProductType } from "../models/products/product.types.js";
+import { DiscountTier, ProductType } from "../models/products/product.types.js";
 import { validateInitData } from "../utils/validateInitData.js";
 import { isAdminByUserId } from "../utils/isAdmin.js";
 
@@ -16,8 +16,8 @@ interface CreateProductBody {
   basePrice: number;
   currency?: "USDT" | "BTC";
   available: number;
-  discounts?: { minQuantity: number; discount: number }[];
-  contentTemplate?: string;
+  tags?: string[];
+  discounts: DiscountTier[];
   isActive?: boolean;
 }
 
@@ -70,13 +70,13 @@ router.post("/products", async (req, res) => {
       slug: body.slug?.trim() || undefined,
       title: body.title.trim(),
       image: body.image,
+      tags: body.tags,
       shortDescription: body.shortDescription.trim(),
       fullDescription: body.fullDescription?.trim(),
       basePrice,
       currency: body.currency ?? "USDT",
       available,
       discounts: body.discounts ?? [],
-      contentTemplate: body.contentTemplate || undefined,
       isActive: body.isActive ?? true,
     });
 
