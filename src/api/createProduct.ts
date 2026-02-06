@@ -41,6 +41,8 @@ router.post("/products", async (req, res) => {
 
     const { type, title, image, shortDescription, basePrice, available } = body;
 
+    console.log(body, "body to create product");
+
     if (
       !type ||
       !title ||

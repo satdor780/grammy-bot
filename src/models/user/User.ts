@@ -1,22 +1,27 @@
-import {Document, Schema, model} from 'mongoose';
+import { Document, Schema, model } from "mongoose";
 
 export interface IUser extends Document {
-    telegramId: number
-    userName: string
-    firstName: string
-    createdAt: Date
-    balance: number
+  telegramId: number;
+  userName: string;
+  firstName: string;
+  createdAt: Date;
+  balance: number;
+  isAdmin: boolean;
 }
 
-const userSchema = new Schema<IUser>({
+const userSchema = new Schema<IUser>(
+  {
     telegramId: {
-        type: Number,
-        required: [true, 'telegramId is required'],
+      type: Number,
+      required: [true, "telegramId is required"],
     },
-    userName: {type: String},
-    firstName: {type: String},
-    createdAt: {type: Date},
-    balance: {type: Number, default: 0, required: true}
-}, {timestamps: true})
+    userName: { type: String },
+    firstName: { type: String },
+    createdAt: { type: Date },
+    balance: { type: Number, default: 0, required: true },
+    isAdmin: { type: Boolean, default: false },
+  },
+  { timestamps: true },
+);
 
-export const User = model<IUser>('User', userSchema)
+export const User = model<IUser>("User", userSchema);

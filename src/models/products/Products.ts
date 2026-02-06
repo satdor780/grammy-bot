@@ -21,7 +21,7 @@ export interface IProduct extends Document {
 const discountTierSchema = new Schema<DiscountTier>(
   {
     minQuantity: { type: Number, required: true, min: 1 },
-    discount: { type: Number, required: true, min: 0, max: 1 },
+    discount: { type: Number, required: true, min: 0 },
   },
   { _id: false },
 );

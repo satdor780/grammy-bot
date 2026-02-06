@@ -23,6 +23,7 @@ router.post("/init", async (req, res) => {
     res.json({
       success: true,
       user: dbUser,
+      userBalance: dbUser?.balance,
       products: await Product.find().limit(20),
     });
   } catch (err: any) {
