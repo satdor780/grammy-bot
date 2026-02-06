@@ -13,9 +13,9 @@ export const enterData = async (ctx: MyContext) => {
     .map((l) => l.trim())
     .filter(Boolean);
 
-  const productType = ctx.session.productType as "mail" | "full" | undefined;
+  const productType = ctx.session.productType as "mail" | "full" | "custom" | undefined;
 
-  if (!productType || !["mail", "full"].includes(productType)) {
+  if (!productType || !["mail", "full", "custom"].includes(productType)) {
     await ctx.reply("Ошибка: тип продукта не выбран. Начните заново.");
     ctx.session.step = undefined;
     ctx.session.productType = undefined;
@@ -73,6 +73,21 @@ export const enterData = async (ctx: MyContext) => {
           creditScore: lines[5] ? Number(lines[5]) : undefined,
         },
       });
+    } else if (productType === "custom") {
+      if (lines.length === 0) {
+        throw new Error("Нужно указать хотя бы контент");
+      }
+
+      createdContent = await ProductContent.create({
+        product: productId,
+        type: "custom",
+        data: {
+          content: lines[0],
+          title: lines[1] || undefined,
+          externalLink: lines[2] || undefined,
+          notes: lines[3] || undefined,
+        },
+      });
     }
 
     if (!createdContent) {
@@ -92,7 +107,12 @@ export const enterData = async (ctx: MyContext) => {
       .row()
       .text("🏠 В меню", "toMenu");
 
-    const successText = `✅ Добавлен ${justCreatedType === "mail" ? "mail" : "full"} аккаунт\n\nID: ${createdContent._id}`;
+    const typeLabels: Record<string, string> = {
+      mail: "mail",
+      full: "full",
+      custom: "custom",
+    };
+    const successText = `✅ Добавлен ${typeLabels[justCreatedType] || justCreatedType} аккаунт\n\nID: ${createdContent._id}`;
 
     if (ctx.session.lastMessageId && ctx.chat?.id) {
       try {

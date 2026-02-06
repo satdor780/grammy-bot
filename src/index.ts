@@ -15,6 +15,7 @@ import {
   createProduct,
   enterData,
   products,
+  selectCustomProduct,
   start,
   support,
   topup,
@@ -70,6 +71,7 @@ bot.callbackQuery("support", support);
 bot.callbackQuery("topup", topup);
 
 bot.callbackQuery(/^create_product:/, chooseType);
+bot.callbackQuery(/^select_custom_product:/, selectCustomProduct);
 bot.on("message:text", enterData);
 
 // Обработка ошибок согласно документации

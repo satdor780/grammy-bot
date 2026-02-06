@@ -3,7 +3,7 @@ import {HydrateFlavor} from '@grammyjs/hydrate'
 
 export interface MySession {
     step?: 'choose_type' | 'enter_data'
-    productType?: 'mail' | 'full'
+    productType?: 'mail' | 'full' | 'custom'
     currentProductId?: string;
     lastMessageId?: number
 }

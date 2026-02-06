@@ -17,6 +17,8 @@ export const createProduct = async (ctx: CallbackQueryContext<MyContext>) => {
             .row()
             .text('🧾 Фулка', 'create_product:full')
             .row()
+            .text('📦 Кастомный', 'create_product:custom')
+            .row()
             .text('⬅️ Назад', 'products')
             .text('🏠 В меню', 'toMenu')
         await ctx.callbackQuery.message?.editText('выберете тип продукта который хотите создать и следуйте дальнейшем инструкциям',
