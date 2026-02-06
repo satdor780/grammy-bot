@@ -24,17 +24,19 @@ export const products = async (ctx: CallbackQueryContext<MyContext>) => {
       .webApp("🛍 Просмотр витрины", MINIAPP_URI ?? "")
       .row()
       .text("⬅️ Назад", "toMenu");
-    const mailCount = await Product.countDocuments({ type: "mail" });
-    const fullCount = await Product.countDocuments({ type: "full" });
+    const mailCount = await ProductContent.countDocuments({ type: "mail" });
+    const fullCount = await ProductContent.countDocuments({ type: "full" });
 
     // Get custom products with their content counts
     const customProducts = await Product.find({ type: ProductType.CUSTOM });
     let customProductsText = "";
-    
+
     if (customProducts.length > 0) {
       customProductsText = "\n\n📦 Кастомные продукты:\n";
       for (const product of customProducts) {
-        const contentCount = await ProductContent.countDocuments({ product: product._id });
+        const contentCount = await ProductContent.countDocuments({
+          product: product._id,
+        });
         const displayName = product.slug || product.title;
         customProductsText += `• ${displayName}: ${contentCount} шт.\n`;
       }

@@ -5,7 +5,9 @@ import { MyContext } from "../../../../types/index.js";
 import { isAdmin } from "../../../../utils/isAdmin.js";
 
 // selectCustomProduct.ts — handles selection of a custom product for adding content
-export const selectCustomProduct = async (ctx: CallbackQueryContext<MyContext>) => {
+export const selectCustomProduct = async (
+  ctx: CallbackQueryContext<MyContext>,
+) => {
   await ctx.answerCallbackQuery();
 
   if (!isAdmin(ctx)) return;
@@ -31,14 +33,11 @@ export const selectCustomProduct = async (ctx: CallbackQueryContext<MyContext>) 
     }
 
     if (product.type !== ProductType.CUSTOM) {
-      await ctx.editMessageText(
-        "❌ Этот продукт не является кастомным.",
-        {
-          reply_markup: new InlineKeyboard()
-            .text("⬅️ Назад", "create_product:custom")
-            .text("🏠 В меню", "toMenu"),
-        },
-      );
+      await ctx.editMessageText("❌ Этот продукт не является кастомным.", {
+        reply_markup: new InlineKeyboard()
+          .text("⬅️ Назад", "create_product:custom")
+          .text("🏠 В меню", "toMenu"),
+      });
       return;
     }
 
@@ -57,12 +56,9 @@ export const selectCustomProduct = async (ctx: CallbackQueryContext<MyContext>) 
 
     await ctx.editMessageText(
       `📦 Продукт: ${displayName}\n\n` +
-        `Введите данные для кастомного контента (по одной строке на поле):\n\n` +
+        `Введите данные для кастомного контента:\n\n` +
         `Контент (обязательно)     \n` +
-        `Заголовок (опционально)   \n` +
-        `Внешняя ссылка (опционально)\n` +
-        `Заметки (опционально)     `,
-      { reply_markup: backKeyboard },
+        { reply_markup: backKeyboard },
     );
 
     if (messageId) {
@@ -70,13 +66,10 @@ export const selectCustomProduct = async (ctx: CallbackQueryContext<MyContext>) 
     }
   } catch (err) {
     console.error("selectCustomProduct: failed", err);
-    await ctx.editMessageText(
-      "❌ Произошла ошибка. Попробуйте позже.",
-      {
-        reply_markup: new InlineKeyboard()
-          .text("⬅️ Назад", "create_product:custom")
-          .text("🏠 В меню", "toMenu"),
-      },
-    );
+    await ctx.editMessageText("❌ Произошла ошибка. Попробуйте позже.", {
+      reply_markup: new InlineKeyboard()
+        .text("⬅️ Назад", "create_product:custom")
+        .text("🏠 В меню", "toMenu"),
+    });
   }
 };

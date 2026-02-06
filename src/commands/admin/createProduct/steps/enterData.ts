@@ -13,7 +13,11 @@ export const enterData = async (ctx: MyContext) => {
     .map((l) => l.trim())
     .filter(Boolean);
 
-  const productType = ctx.session.productType as "mail" | "full" | "custom" | undefined;
+  const productType = ctx.session.productType as
+    | "mail"
+    | "full"
+    | "custom"
+    | undefined;
 
   if (!productType || !["mail", "full", "custom"].includes(productType)) {
     await ctx.reply("Ошибка: тип продукта не выбран. Начните заново.");
@@ -82,10 +86,7 @@ export const enterData = async (ctx: MyContext) => {
         product: productId,
         type: "custom",
         data: {
-          content: lines[0],
-          title: lines[1] || undefined,
-          externalLink: lines[2] || undefined,
-          notes: lines[3] || undefined,
+          content: ctx.message.text,
         },
       });
     }
