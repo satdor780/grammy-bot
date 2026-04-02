@@ -15,9 +15,9 @@ export const chooseType = async (ctx: CallbackQueryContext<MyContext>) => {
   const parts = ctx.callbackQuery.data.split(":");
   if (parts.length < 2) return;
 
-  const type = parts[1] as "mail" | "full";
+  const type = parts[1] as "mail" | "full" | "custom";
 
-  if (!["mail", "full"].includes(type)) {
+  if (!["mail", "full", "custom"].includes(type)) {
     await ctx.answerCallbackQuery({
       text: "Неизвестный тип",
       show_alert: true,
@@ -26,6 +26,53 @@ export const chooseType = async (ctx: CallbackQueryContext<MyContext>) => {
   }
 
   const isNewProduct = ctx.callbackQuery.data.startsWith("create_product:");
+
+  // For custom type, show list of existing custom products instead of creating new one
+  if (type === "custom" && isNewProduct) {
+    try {
+      const customProducts = await Product.find({ type: ProductType.CUSTOM });
+      
+      if (customProducts.length === 0) {
+        await ctx.editMessageText(
+          "❌ Нет доступных кастомных продуктов.\n\n" +
+            "Сначала создайте кастомный продукт через витрину.",
+          {
+            reply_markup: new InlineKeyboard()
+              .text("⬅️ Назад", "createProduct")
+              .text("🏠 В меню", "toMenu"),
+          },
+        );
+        return;
+      }
+
+      const keyboard = new InlineKeyboard();
+      
+      for (const product of customProducts) {
+        const displayName = product.slug || product.title || product._id.toString();
+        keyboard.text(`📦 ${displayName}`, `select_custom_product:${product._id.toString()}`);
+        keyboard.row();
+      }
+      
+      keyboard.text("⬅️ Назад", "createProduct").text("🏠 В меню", "toMenu");
+
+      await ctx.editMessageText(
+        "📦 Выберите кастомный продукт для добавления контента:",
+        { reply_markup: keyboard },
+      );
+      return;
+    } catch (err) {
+      console.error("chooseType: fetch custom products failed", err);
+      await ctx.editMessageText(
+        "❌ Не удалось загрузить список продуктов. Попробуйте позже.",
+        {
+          reply_markup: new InlineKeyboard()
+            .text("⬅️ Назад", "createProduct")
+            .text("🏠 В меню", "toMenu"),
+        },
+      );
+      return;
+    }
+  }
 
   if (!isNewProduct && !ctx.session.currentProductId) {
     await ctx.editMessageText(
@@ -42,10 +89,19 @@ export const chooseType = async (ctx: CallbackQueryContext<MyContext>) => {
 
   if (isNewProduct && !ctx.session.currentProductId) {
     try {
-      const title =
-        type === "mail" ? "Новый продукт (Почта)" : "Новый продукт (Фулка)";
+      let title: string;
+      let productType: ProductType;
+      
+      if (type === "mail") {
+        title = "Новый продукт (Почта)";
+        productType = ProductType.MAIL;
+      } else {
+        title = "Новый продукт (Фулка)";
+        productType = ProductType.FULL;
+      }
+      
       const product = await Product.create({
-        type: type === "mail" ? ProductType.MAIL : ProductType.FULL,
+        type: productType,
         title,
         image: PLACEHOLDER_IMAGE,
         shortDescription: "Заполните позже",

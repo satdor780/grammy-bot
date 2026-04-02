@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { Product, User } from "../models/index.js";
+import { Product, ProductContent, ProductType, User } from "../models/index.js";
 import { validateInitData } from "../utils/index.js";
 
 const router = Router();
@@ -20,10 +20,22 @@ router.post("/init", async (req, res) => {
 
     let dbUser = await User.findOne({ telegramId: user.id });
 
+    const customProducts = await Product.find({ type: ProductType.CUSTOM });
+
+    const warehouse = await Promise.all(
+      customProducts.map(async (product) => ({
+        productId: product._id.toString(),
+        available: await ProductContent.countDocuments({
+          product: product._id,
+        }),
+      })),
+    );
+
     res.json({
       success: true,
       user: dbUser,
       userBalance: dbUser?.balance,
+      warehouse,
       products: await Product.find().limit(20),
     });
   } catch (err: any) {
